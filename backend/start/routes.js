@@ -17,7 +17,7 @@
 const Route = use('Route')
 
 Route.post('sessions', 'SessionController.store').validator('Session')
-Route.post('users', 'UserController.store')
+Route.post('users', 'UserController.store').validator('User')
 
 Route.group(() => {
   Route.resource('teams', 'TeamController')
