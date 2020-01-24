@@ -17,19 +17,9 @@ class ProjectController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new project.
-   * GET projects/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async index ({ request }) {
+    // busca os projetos relacionados ao time que o usuairo está logado
+    return request.team.projects().fetch()
   }
 
   /**
@@ -41,6 +31,10 @@ class ProjectController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    const data = request.only(['title'])
+    const project = await request.team.projects().create(data)
+
+    return project
   }
 
   /**
@@ -52,19 +46,11 @@ class ProjectController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
-
-  /**
-   * Render a form to update an existing project.
-   * GET projects/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+  async show ({ params, request }) {
+    return request.team
+      .projects()
+      .where('id', params.id)
+      .first()
   }
 
   /**
@@ -76,6 +62,17 @@ class ProjectController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    const data = request.only(['title'])
+    const project = await request.team
+      .projects()
+      .where('id', params.id)
+      .first()
+
+    project.merge(data)
+
+    await project.save()
+
+    return project
   }
 
   /**
@@ -87,6 +84,12 @@ class ProjectController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
+    const project = await request.team
+      .projects()
+      .where('id', params.id)
+      .first()
+
+    await project.delete()
   }
 }
 

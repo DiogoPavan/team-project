@@ -26,7 +26,7 @@ class InvitationEmail {
         message
           .to(email)
           .from('diogopv10@gmail.com', 'Diogo Reis Pavan')
-          .subject(`Convite para o time ${}`)
+          .subject(`Convite para o time ${team.name}`)
       }
     )
   }
