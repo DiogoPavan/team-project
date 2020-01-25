@@ -17,6 +17,11 @@ class User extends Model {
     })
   }
 
+  // retornar todos os user team associados com esse user
+  teamJoins () {
+    return this.hasMany('App/Models/UserTeam')
+  }
+
   tokens () {
     return this.hasMany('App/Models/Token')
   }
@@ -25,6 +30,30 @@ class User extends Model {
     return this.belongsToMany('App/Models/Team').pivotModel(
       'App/Models/UserTeam'
     )
+  }
+
+  async is (expression) {
+    const team = await this.teamJoins()
+      .where('team_id', this.currentTeam)
+      .first()
+    // esse is vem do Acl Role (traits), verificar se ele é de determinado ROle
+    return team.is(expression)
+  }
+
+  async can (expression) {
+    const team = await this.teamJoins()
+      .where('team_id', this.currentTeam)
+      .first()
+
+    return team.can(expression)
+  }
+
+  async scope (required) {
+    const team = await this.teamJoins()
+      .where('team_id', this.currentTeam)
+      .first()
+
+    return team.scope(required)
   }
 }
 
